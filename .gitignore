@@ -1,0 +1,4 @@
+train*/
+__pycache__/
+.idea
+logs
