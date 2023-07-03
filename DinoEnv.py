@@ -4,6 +4,7 @@ from pygame.locals import *
 import numpy as np
 import DinoGame
 import time
+import sys
 
 
 class DinoEnv(gym.Env):
@@ -23,8 +24,9 @@ class DinoEnv(gym.Env):
         self.action_space = gym.spaces.Discrete(3)
         # self.observation_space = gym.spaces.Box(low=0, high=DinoGame.SCREEN_WIDTH, shape=(2,), dtype=np.int16)
         self.observation_space = gym.spaces.Dict({
-            'obs_position_x': gym.spaces.Box(low=0, high=DinoGame.SCREEN_WIDTH, shape=(1,), dtype=np.int16),
-            'obs_position_y': gym.spaces.Box(low=0, high=DinoGame.SCREEN_HEIGHT, shape=(1,), dtype=np.int16)
+            'obs_position_x': gym.spaces.Discrete(DinoGame.SCREEN_WIDTH+1),
+            'obs_position_y': gym.spaces.Discrete(DinoGame.SCREEN_HEIGHT+1),
+            'dino_position_y': gym.spaces.Discrete(DinoGame.SCREEN_HEIGHT+1)
         })
 
         self.clock = pygame.time.Clock()
@@ -90,6 +92,11 @@ class DinoEnv(gym.Env):
         if not self.renderMode:
             return
         
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.close()
+                return
+        
         pygame.event.pump()
 
         # Render the game environment
@@ -119,14 +126,16 @@ class DinoEnv(gym.Env):
         if self.screen is not None:
             pygame.display.quit()
             pygame.quit()
+            sys.exit()
         
     
     def _get_observation(self):
         # return np.array([self.obstacles[0].rect.x, self.obstacles[0].rect.y], dtype=np.int16)
         o_x = self.obstacles[0].rect.x
         return {
-                'obs_position_x': np.array([o_x if o_x>0 else 0], dtype=np.int16),
-                'obs_position_y': np.array([self.obstacles[0].rect.y], dtype=np.int16)
+                'obs_position_x': o_x if o_x>0 else 0,
+                'obs_position_y': self.obstacles[0].rect.y,
+                'dino_position_y': self.player.dino_rect.y,
             }
 
 

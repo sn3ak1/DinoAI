@@ -29,7 +29,7 @@ class TrainAndLoggingCallback(BaseCallback):
         return True
     
 
-CHECKPOINT_DIR = './train/'
+CHECKPOINT_DIR = './train2_DQN/'
 LOG_DIR = './logs/'
 
 callback = TrainAndLoggingCallback(check_freq=50000, save_path=CHECKPOINT_DIR)
@@ -38,6 +38,6 @@ env = DinoEnv.DinoEnv(renderMode=False)
 
 env_checker.check_env(env)
 
-model = DQN('MlpPolicy', env, tensorboard_log=LOG_DIR, verbose=1, buffer_size=500000, learning_starts=1000)
+model = DQN('MultiInputPolicy', env, tensorboard_log=LOG_DIR, verbose=1, buffer_size=500000, learning_starts=10000)
 
-model.learn(total_timesteps=5000000, callback=callback)
+model.learn(total_timesteps=50000000, callback=callback)

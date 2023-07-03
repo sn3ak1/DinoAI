@@ -1,7 +1,6 @@
 import pygame
 import os
 import random
-pygame.init()
 
 # Global Constants
 SCREEN_HEIGHT = 600
@@ -249,6 +248,7 @@ def main():
 
 
 def menu(death_count):
+    pygame.init()
     global points, SCREEN
     SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     run = True
