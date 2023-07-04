@@ -21,12 +21,11 @@ class DinoEnv(gym.Env):
             self.font = pygame.font.Font('freesansbold.ttf', 20)
 
 
-        self.action_space = gym.spaces.Discrete(3)
+        self.action_space = gym.spaces.Discrete(2)
         # self.observation_space = gym.spaces.Box(low=0, high=DinoGame.SCREEN_WIDTH, shape=(2,), dtype=np.int16)
         self.observation_space = gym.spaces.Dict({
-            'obs_position_x': gym.spaces.Discrete(DinoGame.SCREEN_WIDTH+1),
-            'obs_position_y': gym.spaces.Discrete(DinoGame.SCREEN_HEIGHT+1),
-            'dino_position_y': gym.spaces.Discrete(DinoGame.SCREEN_HEIGHT+1)
+            'should_perform': gym.spaces.Discrete(2),
+            'is_jumping': gym.spaces.Discrete(2),
         })
 
         self.clock = pygame.time.Clock()
@@ -54,7 +53,7 @@ class DinoEnv(gym.Env):
         userInput = np.zeros(np.max([pygame.K_UP, pygame.K_DOWN]) + 1, dtype=bool)
         if action == 1:
             userInput[pygame.K_UP] = True
-        elif action == 2:
+        elif action == 0:
             userInput[pygame.K_DOWN] = True
         
         # Update the game environment
@@ -76,13 +75,10 @@ class DinoEnv(gym.Env):
             self.game_speed += 1
 
         # Calculate the reward, done flag, and info
-        reward = 0
+        reward = 1
         done = False
         info = {}
 
-        if not self.avoided_obstacle and self.player.dino_rect.x > self.obstacles[0].rect.x + self.obstacles[0].rect.width:
-            reward = 1
-            self.avoided_obstacle = True
 
         if self.player.dino_rect.colliderect(self.obstacles[0].rect):
             reward = -1
@@ -135,19 +131,28 @@ class DinoEnv(gym.Env):
         # return np.array([self.obstacles[0].rect.x, self.obstacles[0].rect.y], dtype=np.int16)
         o_x = self.obstacles[0].rect.x
         return {
-                'obs_position_x': o_x if o_x>0 else 0,
-                'obs_position_y': self.obstacles[0].rect.y,
-                'dino_position_y': self.player.dino_rect.y,
+                'should_perform': 1 if o_x <= self.player.dino_rect.x + self.player.dino_rect.width*2 + 20 + self.game_speed**2/10 and self.obstacles[0] > 250 else 0,
+                'is_jumping': 1 if self.player.isJumping else 0,
             }
 
 
-# env = DinoEnv()
-# while True:
-#     observation, _ = env.reset()
-#     done = False
-#     while not done:
-#         action = env.action_space.sample()  # Randomly select an action
-#         observation, reward, done, _, info = env.step(action)
-#         print(observation, reward, done, info)
-#         env.render()
-#     time.sleep(1)
+env = DinoEnv()
+while True:
+    observation, _ = env.reset()
+    done = False
+    while not done:
+        # action = env.action_space.sample()  # Randomly select an action
+
+        action = 0
+        distanceToObs = observation['obs_position_x'] - (env.player.dino_rect.x + env.player.dino_rect.width + observation['game_speed']**2/10)
+        print(1 if observation['obs_position_x'] <= env.player.dino_rect.x + env.player.dino_rect.width*2 + 20 + observation['game_speed']**2/10 and observation['obs_position_y'] > 250 else 0)
+        shouldPerformAction = distanceToObs <= 50 and distanceToObs >= 0
+        if shouldPerformAction:
+            if observation['obs_position_y'] > 250:
+                action = 1
+
+        # action = 1 if observation['obs_position_x'] <= env.player.dino_rect.x + env.player.dino_rect.width*2 + 20 + observation['game_speed']**2/10 and observation['obs_position_y'] > 250 else 2
+        observation, reward, done, _, info = env.step(action)
+        # print(observation, reward, done, info)
+        env.render()
+    time.sleep(1)
