@@ -49,13 +49,13 @@ class Dinosaur:
         self.dino_rect.x = self.X_POS
         self.dino_rect.y = self.Y_POS
 
-    def update(self, userInput):
+    def update(self, userInput, game_speed=20):
         if self.dino_duck:
             self.duck()
         if self.dino_run:
             self.run()
         if self.dino_jump:
-            self.jump()
+            self.jump(game_speed)
 
         if self.step_index >= 10:
             self.step_index = 0
@@ -87,11 +87,11 @@ class Dinosaur:
         self.dino_rect.y = self.Y_POS
         self.step_index += 1
 
-    def jump(self):
+    def jump(self, game_speed):
         self.image = self.jump_img
         if self.dino_jump:
             self.dino_rect.y -= self.jump_vel * 4
-            self.jump_vel -= 0.8
+            self.jump_vel -= 0.7 + game_speed / 200
         if self.jump_vel < - self.JUMP_VEL:
             self.dino_jump = False
             self.jump_vel = self.JUMP_VEL

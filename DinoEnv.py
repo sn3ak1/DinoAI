@@ -57,7 +57,7 @@ class DinoEnv(gym.Env):
             userInput[pygame.K_DOWN] = True
         
         # Update the game environment
-        self.player.update(userInput)
+        self.player.update(userInput, self.game_speed)
         for obstacle in self.obstacles:
             obstacle.update(self.game_speed)
             if obstacle.rect.x < -obstacle.rect.width:
@@ -131,28 +131,28 @@ class DinoEnv(gym.Env):
         # return np.array([self.obstacles[0].rect.x, self.obstacles[0].rect.y], dtype=np.int16)
         o_x = self.obstacles[0].rect.x
         return {
-                'should_perform': 1 if o_x <= self.player.dino_rect.x + self.player.dino_rect.width*2 + 20 + self.game_speed**2/10 and self.obstacles[0] > 250 else 0,
-                'is_jumping': 1 if self.player.isJumping else 0,
+                'should_perform': 1 if o_x <= self.player.dino_rect.x + self.player.dino_rect.width*2 + 30 + self.game_speed**3/1000 and self.obstacles[0].rect.y > 250 else 0,
+                'is_jumping': 1 if self.player.dino_jump else 0,
             }
 
 
-env = DinoEnv()
-while True:
-    observation, _ = env.reset()
-    done = False
-    while not done:
-        # action = env.action_space.sample()  # Randomly select an action
+# env = DinoEnv()
+# while True:
+#     observation, _ = env.reset()
+#     done = False
+#     while not done:
+#         # action = env.action_space.sample()  # Randomly select an action
 
-        action = 0
-        distanceToObs = observation['obs_position_x'] - (env.player.dino_rect.x + env.player.dino_rect.width + observation['game_speed']**2/10)
-        print(1 if observation['obs_position_x'] <= env.player.dino_rect.x + env.player.dino_rect.width*2 + 20 + observation['game_speed']**2/10 and observation['obs_position_y'] > 250 else 0)
-        shouldPerformAction = distanceToObs <= 50 and distanceToObs >= 0
-        if shouldPerformAction:
-            if observation['obs_position_y'] > 250:
-                action = 1
+#         # action = 0
+#         # distanceToObs = observation['obs_position_x'] - (env.player.dino_rect.x + env.player.dino_rect.width + observation['game_speed']**2/10)
+#         # print(1 if observation['obs_position_x'] <= env.player.dino_rect.x + env.player.dino_rect.width*2 + 20 + observation['game_speed']**2/10 and observation['obs_position_y'] > 250 else 0)
+#         # shouldPerformAction = distanceToObs <= 50 and distanceToObs >= 0
+#         # if shouldPerformAction:
+#         #     if observation['obs_position_y'] > 250:
+#         #         action = 1
 
-        # action = 1 if observation['obs_position_x'] <= env.player.dino_rect.x + env.player.dino_rect.width*2 + 20 + observation['game_speed']**2/10 and observation['obs_position_y'] > 250 else 2
-        observation, reward, done, _, info = env.step(action)
-        # print(observation, reward, done, info)
-        env.render()
-    time.sleep(1)
+#         action = 1 if observation['should_perform'] else 0
+#         observation, reward, done, _, info = env.step(action)
+#         print(observation, reward, done, info)
+#         env.render()
+#     time.sleep(1)
