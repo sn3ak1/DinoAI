@@ -16,7 +16,7 @@ env = DinoEnv.DinoEnv(renderMode=True)
 
 model = DQN('MultiInputPolicy', env)
 
-model.load('train2_DQN/best_model_50000') 
+model.load('train2_DQN/best_model_1000000') 
 
 for episode in range(5): 
     obs, _ = env.reset()

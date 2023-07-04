@@ -1,6 +1,7 @@
-from stable_baselines3 import DQN
-from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack
+from stable_baselines3 import PPO
+from stable_baselines3.common.vec_env import SubprocVecEnv
+from stable_baselines3.common.env_util import make_vec_env
+
 
 import os 
 # Import Base Callback for saving models
@@ -8,7 +9,7 @@ from stable_baselines3.common.callbacks import BaseCallback
 # Check Environment    
 from stable_baselines3.common import env_checker
 
-import DinoEnv
+from DinoEnv import DinoEnv
 
 
 class TrainAndLoggingCallback(BaseCallback):
@@ -29,19 +30,16 @@ class TrainAndLoggingCallback(BaseCallback):
         return True
     
 
-CHECKPOINT_DIR = './train2_DQN/'
+CHECKPOINT_DIR = './train2_PPO/'
 LOG_DIR = './logs/'
 
-callback = TrainAndLoggingCallback(check_freq=100000, save_path=CHECKPOINT_DIR)
 
-env = DinoEnv.DinoEnv(renderMode=False)
+if __name__ == '__main__':
+    env_lambda = lambda: DinoEnv(renderMode=False)
+    num_cpu = 4
+    env = SubprocVecEnv([env_lambda for _ in range(num_cpu)])
 
-env_checker.check_env(env)
+    model = PPO('MultiInputPolicy',env,verbose=1)
 
-# model = DQN('MultiInputPolicy', env, tensorboard_log=LOG_DIR, verbose=1, buffer_size=5000000, learning_starts=1000)
-
-model = DQN('MultiInputPolicy', env)
-model.load('train2_DQN/best_model_1000000') 
-
-
-model.learn(total_timesteps=50000000, callback=callback)
+    callback = TrainAndLoggingCallback(check_freq=100000, save_path=CHECKPOINT_DIR)
+    model.learn(total_timesteps=1000000, callback=callback)

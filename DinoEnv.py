@@ -66,6 +66,7 @@ class DinoEnv(gym.Env):
 
         if len(self.obstacles) <= 0:
             self.obstacles.append(DinoGame.generate_obstacle())
+            self.avoided_obstacle = False
 
         self.cloud.update(self.game_speed)
         self.x_pos_bg -= self.game_speed
@@ -79,11 +80,12 @@ class DinoEnv(gym.Env):
         done = False
         info = {}
 
-        if self.avoided_obstacle and self.player.dino_rect.x > self.obstacles[0].rect.x + self.obstacles[0].rect.width:
-            reward = 10
+        if not self.avoided_obstacle and self.player.dino_rect.x > self.obstacles[0].rect.x + self.obstacles[0].rect.width:
+            reward = 1
+            self.avoided_obstacle = True
 
         if self.player.dino_rect.colliderect(self.obstacles[0].rect):
-            reward = -10
+            reward = -1
             done = True
         
         return self._get_observation(), reward, done, False, info
@@ -140,7 +142,7 @@ class DinoEnv(gym.Env):
 
 
 # env = DinoEnv()
-# for _ in range(5):
+# while True:
 #     observation, _ = env.reset()
 #     done = False
 #     while not done:
