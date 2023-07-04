@@ -137,23 +137,23 @@ class DinoEnv(gym.Env):
             }
 
 
-env = DinoEnv()
-while True:
-    observation, _ = env.reset()
-    done = False
-    while not done:
-        # action = env.action_space.sample()  # Randomly select an action
+# env = DinoEnv()
+# while True:
+#     observation, _ = env.reset()
+#     done = False
+#     while not done:
+#         # action = env.action_space.sample()  # Randomly select an action
 
-        # action = 0
-        # distanceToObs = observation['obs_position_x'] - (env.player.dino_rect.x + env.player.dino_rect.width + observation['game_speed']**2/10)
-        # print(1 if observation['obs_position_x'] <= env.player.dino_rect.x + env.player.dino_rect.width*2 + 20 + observation['game_speed']**2/10 and observation['obs_position_y'] > 250 else 0)
-        # shouldPerformAction = distanceToObs <= 50 and distanceToObs >= 0
-        # if shouldPerformAction:
-        #     if observation['obs_position_y'] > 250:
-        #         action = 1
+#         # action = 0
+#         # distanceToObs = observation['obs_position_x'] - (env.player.dino_rect.x + env.player.dino_rect.width + observation['game_speed']**2/10)
+#         # print(1 if observation['obs_position_x'] <= env.player.dino_rect.x + env.player.dino_rect.width*2 + 20 + observation['game_speed']**2/10 and observation['obs_position_y'] > 250 else 0)
+#         # shouldPerformAction = distanceToObs <= 50 and distanceToObs >= 0
+#         # if shouldPerformAction:
+#         #     if observation['obs_position_y'] > 250:
+#         #         action = 1
 
-        action = 1 if observation['should_perform'] else 0
-        observation, reward, done, _, info = env.step(action)
-        print(observation, reward, done, info)
-        env.render()
-    time.sleep(1)
+#         action = 1 if observation['should_perform'] else 0
+#         observation, reward, done, _, info = env.step(action)
+#         print(observation, reward, done, info)
+#         env.render()
+#     time.sleep(1)
