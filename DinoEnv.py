@@ -76,7 +76,7 @@ class DinoEnv(gym.Env):
             self.game_speed += 1
 
         # Calculate the reward, done flag, and info
-        reward = 1 if prev_obs['should_perform'] == 1 else 0
+        reward = 1 if prev_obs['should_perform'] == 1 and action == 1 else 0
         done = False
         info = {}
 
